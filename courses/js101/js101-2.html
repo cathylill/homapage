@@ -1,0 +1,109 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<h1>Javascript 101 - Class 2</h1>
+	</head>
+	<body>
+		<p>View the source of this page either in your browser (right click, 'View Source") or text editor (File, "Save As" then open in text editor) to see the example javascript code.</p>
+    <p>Remember to turn on the console in your browser so you can see the messages being logged!</p>
+		<script type="text/javascript">
+      //Basic 'if' example
+      var x = 5;
+      
+      if (x > 0) {
+        console.log(x + " is greater than 0");
+      }
+    
+			//'if' condition - tests if an expression is true
+			function moreThanFive(testNumber) {
+				if (testNumber > 5) {
+					return testNumber + " is more than 5";
+				} 
+			}
+			
+			var test6 = moreThanFive(6);
+			console.log(test6);
+			
+			var test2 = moreThanFive(2);
+			console.log("test2 value is: " + test2); //test2 is undefined, since there was no result from running the 'moreThan5' function with the argument 2
+
+      //truthy and falsey
+      var y = 0;
+      if (y) {
+        console.log("we won't see this message since y = 0, which evaluates as falsey");
+      }
+      
+      var m = "6";
+      if (m == 6) {
+        console.log("our condition evaluated as true, because the double operator allowed values of different types to be matched");
+      }
+      
+      var z = "Hello";
+      if (z) {
+        console.log("we should see this, as z has been initialised with a truthy value");
+      }
+      
+      //the example above is a good way to check whether your variable has been properly
+      //initialised if the value should be an object (like an element on a web page) or string.
+      //If the value is a number or boolean, or you're not sure of the type you'll need a more 
+      //exact check, for example....
+      
+      var a = false;
+      if (a !== null && a !== undefined) {
+        console.log("success - even though the value of a is falsey, we can check a exists (not null) and is initialised (not undefined).");
+      }
+			
+			//'else' allows additional tests if the previous expression
+			//doesn't evaluate to true.
+      if (x === 5) {
+        console.log("x equals 5");
+      } else {
+        console.log("x does not equal 5");
+      }
+      
+      //More complex example, showing use of 'if' and 'else' inside a function
+			function isItSeven(testNumber) {
+				if (testNumber > 7) {
+					return "No, " + testNumber + " is more than 7";
+				} else if (testNumber < 7) {
+					return "No, " + testNumber + " is less than 7";
+				} else {
+					return "Yes! " + testNumber + " is 7";
+				}
+			}
+      
+      var testForSeven = isItSeven(-90); //test with 100, 7, -90
+      console.log("Is it 7? " + testForSeven);
+
+			// using && (and) and || (or)
+			function thirtySomething(testAge) {
+				if (testAge >= 30 && testAge < 40) {
+					return testAge + " is thirty-something! Go watch Seinfeld re-runs.";
+				} else if (testAge < 0 || testAge > 120) {
+					return "Are you sure that's your age?!";
+				} else {
+					return "Lucky you, you are not thirty-something!";
+				}
+			}
+      
+      var whatsMyAgeAgain = thirtySomething(-5);
+      console.log(whatsMyAgeAgain);
+      
+      //'for' loop
+      for (i = 0; i <= 5; i += 1) {
+        console.log(i);
+      }
+      
+      //'for' loop using array
+      var myCars = ["Camira", "Lancer", "Civic"];
+      
+      for (i = 0; i < myCars.length; i += 1) {
+        console.log(myCars[i]);
+      } 
+
+		</script>
+	</body>
+</html>
+<!-- This work is licenced under the Creative Commons Attribution-NonCommercial-ShareAlike
+3.0 Unported License. To view a copy of this licence, visit http://creativecommons.org/licenses/by-nc-sa/3.0/ 
+or send a letter to Creative Commons, 171 Second Street, Suite 300, San Francisco, California 94105, USA. -->

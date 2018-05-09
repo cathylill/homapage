@@ -1,0 +1,60 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <title>Class #4 Exercises</title>
+    <style>
+    .fat-cat {color: yellow; font-weight: bold;}
+    .skinny-cat {color: purple; font-weight: bold;}
+    </style>
+  </head>
+  <body>
+    <a href="http://grooveshark.com">Grooveshark Link</a>
+    <div class="garfield">This is the Garfield DIV</div>
+    <p class="felix">This is the Felix DIV</p>
+    <div id="sylvester">This is the Sylvester DIV</div>
+    <a href="http://au.yahoo.com">Yahoo Link</a>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.0/jquery.min.js"></script>
+    <script>
+      var allLinks = jQuery("a");
+      var cats = jQuery("div.garfield, .felix, #sylvester");
+      
+      cats.css("background", "blue");
+      
+      jQuery("div.garfield").addClass("fat-cat");
+      
+      jQuery(".felix").css("background", "orange").addClass("skinny-cat").fadeTo(3000, "0.2");
+
+      jQuery("a").click(function (event) {
+        jQuery("a").css("background", "red");  
+        event.preventDefault();
+      });
+      
+      jQuery("a").hover(
+        function () {
+          jQuery(this).css("background", "yellow");
+        },
+        function () {
+          jQuery(this).css("background", "none");
+        }
+      );
+      
+      jQuery("#sylvester").toggle(
+        function () {
+          jQuery(this).css("background", "pink");
+        },
+        function () {
+          jQuery(this).css("background", "blue");
+        }
+      );
+      
+      jQuery("div.garfield").hover(
+        function () {
+          jQuery(this).animate({"height" : "100px", "opacity" : 0.2}, 3000);
+        },
+        function () {
+          jQuery(this).animate({"height" : "20px", "opacity" : 1}, 1500);
+        }
+      );
+    </script>
+  </body>
+</html>

@@ -1,0 +1,653 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+		<title>HR Org Chart Example - Raphael JS</title>
+		
+		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js" type="text/javascript"></script>
+		<script src="js/raphael-min.js" type="text/javascript"></script>
+		<script type="text/javascript">
+			jQuery.fn.orgChart = function (options) {
+				
+				var settings = jQuery.extend({
+						zoom : 1,
+						boxHeight : 40,
+						boxWidth: 80,
+						boxCornerRad : 5,
+						boxSideGutter : 20,
+						boxTopGutter : 30,
+						textSize : 12,
+						container : "org-chart-display",
+						info : "org-chart-more-info",
+						paperHeight : 500,
+						paperWidth : 700
+					}, options || {}),
+					pHeight = settings.paperHeight * settings.zoom,
+					pWidth = settings.paperWidth * settings.zoom,
+					pCentreX = pWidth / 2,
+					bHeight = settings.boxHeight * settings.zoom,
+					bWidth = settings.boxWidth * settings.zoom,
+					bCornerRad = settings.boxCornerRad * settings.zoom,
+					bSideGutter = settings.boxSideGutter * settings.zoom,
+					bTopGutter = settings.boxTopGutter * settings.zoom,
+					fontSize = settings.textSize * settings.zoom,
+					paper = Raphael(settings.container, pWidth, pHeight);
+				
+				jQuery(this).find("ol").each(function () {
+					var currOl = jQuery(this),
+					    currList = jQuery(this).find("> li"),
+					    parent = jQuery(this).closest("li").get(0) || "",
+						parentX = parent.positionX || pCentreX,
+					    lineStartPos = parentX - (((bWidth * currList.length) + (bSideGutter * (currList.length - 1))) / 2),
+						bTopY,
+						bCentreY,
+						level = 0,
+						getLevel,
+						hideInfo,
+						showInfo;
+						
+					getLevel = function (currLevel) {				
+						if (currLevel.parent().closest("ol").length > 0) {
+							level ++;
+							getLevel(currLevel.parent().closest("ol"));
+						}
+						
+						return level;
+					};
+					
+					this.level = getLevel(jQuery(this));
+					this.parent = parent;
+					this.hidden = false;
+
+					bTopY = ((bHeight + bTopGutter) * level) + (bTopGutter / 2);
+					bCentreY = (bTopY + (bHeight / 2));		
+					
+					if (parent) {
+						childConnector = paper.path("M " + parentX + " " + (bTopY - (bTopGutter / 2)) + " L " + parentX + " " + (bTopY - bTopGutter));
+						parent.treeChildren.push(childConnector);
+					}			
+					
+					currList.each(function (index) {
+						var currListItem = jQuery(this),
+						    hasChildren = currListItem.find("ol").length > 0 || currListItem.hasClass("has-reports"),
+						    bLeftX = ((bWidth + bSideGutter) * index) + lineStartPos,							
+							bCentreX = (bLeftX + (bWidth / 2)),
+						    box = paper.rect(bLeftX, bTopY, bWidth, bHeight, bCornerRad),
+							icon = hasChildren ? paper.image("images/icon-hasreports.gif", bLeftX + 2, bTopY + 2, 18 * settings.zoom, 21 * settings.zoom) : null,
+						    label = paper.text(bCentreX, bCentreY, currListItem.find("> .employee-name").text() + "\n" + currListItem.find(".position:first").text()).attr({"font-size" : fontSize}),
+							info = currListItem.find("> .details").clone(),
+                            overlay = paper.rect(bLeftX, bTopY, bWidth, bHeight, bCornerRad).attr({"fill-opacity": 0.1, "fill": "#ffffff", "stroke-opacity": 0}),
+						    infoLeftX = bLeftX + bWidth + 7 + "px",
+							siblingConnector,
+							childConnector,
+							infoShowHideTimer,
+							infoKeepOpenTimer,
+							animLock = false,
+					        infoContainer = jQuery("<div class='info'></div>"),
+							setupContainer;
+							
+						if (currListItem.hasClass('current-manager')) {
+							box.attr({ stroke: "#554AAF" });
+						}	
+						
+						hideInfo = function (infoContainer) {
+							infoContainer.hide();
+						};
+						
+						showInfo = function (infoContainer) {
+							jQuery("div.info").hide();
+							infoContainer.fadeIn("normal");
+						};								
+						
+						setupContainer = (function () {
+							infoContainer.appendTo("#" + settings.container).html(info).css({
+								left : infoLeftX,
+								top: bTopY - 7 + "px"
+							}).append("<span class='arrow'>&nbsp;</span>").append("<a href='#' class='close'>Close</a>");	
+							infoContainer.find("a.close").click(function () {
+								hideInfo(infoContainer);
+								return false;
+							});				
+						}());
+						
+    
+						this.positionX = bCentreX;
+						this.positionY = bTopY;
+						this.treeChildren = paper.set();
+						this.groupIndex = index;
+	
+						if (currList.length > index + 1) {
+							siblingConnector = paper.path("M " + bCentreX + " " + bTopY + " L " + bCentreX + " " + (bTopY - (bTopGutter / 2)) + " L " + (bCentreX + bSideGutter + bWidth) + " " + (bTopY - (bTopGutter / 2)));
+						} else if (currList.length > 1) {
+							siblingConnector = paper.path("M " + bCentreX + " " + bTopY + " L " + bCentreX + " " + (bTopY - (bTopGutter / 2)));
+						}
+
+						box.attr({fill : "#FFFFFF"});
+						
+						if (parent) {
+							parent.treeChildren.push(siblingConnector);
+							parent.treeChildren.push(box);
+							parent.treeChildren.push(label);	
+							parent.treeChildren.push(icon);
+                            parent.treeChildren.push(overlay);						
+						}											
+
+						infoContainer.hover(
+							function () {
+								window.clearTimeout(infoShowHideTimer);
+								infoContainer.fadeTo("fast", 1);
+							},
+							function () {
+								var hideInfoFn;
+													
+								hideInfoFn = function() { 
+									hideInfo(infoContainer); 
+								};
+								
+                                window.clearTimeout(infoShowHideTimer);								
+								infoShowHideTimer = window.setTimeout(hideInfoFn, 200);
+							}
+						);
+						jQuery(overlay.node).hover(
+							function () {	
+								var showInfoFn,
+								    childOlHidden = currListItem.find("> ol").get(0) ? currListItem.find("> ol").get(0).hidden : true;
+								
+								showInfoFn = function() { 
+									showInfo(infoContainer); 
+								};
+								
+								jQuery(this).css({cursor : "pointer"});
+                                
+                                window.clearTimeout(infoShowHideTimer);
+                                
+                                if (infoContainer.is(":hidden")) {
+                                    showInfoFn();
+                                }
+
+								if (childOlHidden) {
+									infoContainer.fadeTo("normal", 1);
+								} else {
+									infoContainer.fadeTo("normal", 0.40);
+								}
+							},
+							function () {	
+								var hideInfoFn;
+													
+								hideInfoFn = function() { 
+									hideInfo(infoContainer); 
+								};
+								
+								infoShowHideTimer = window.setTimeout(hideInfoFn, 200);
+							}
+						);
+
+						jQuery(overlay.node).click(function () {
+							if (currListItem.get(0).treeChildren.length > 0) {
+								currListItem.siblings().each(function () {
+									this.treeChildren.hide();
+									jQuery(this).find("ol").each(function () {
+										this.hidden = true;
+									});
+									jQuery(this).find("li").each(function () {
+										this.treeChildren.hide();									
+									});
+								});
+								currListItem.get(0).treeChildren.show();
+								currListItem.find("li").each(function () {
+									this.treeChildren.hide();	
+								});
+								
+								infoContainer.fadeTo("normal", 0.40);
+								
+								if (currListItem.find("> ol").get(0)) {
+									currListItem.find("> ol").get(0).hidden = false;
+									currListItem.find("> ol li").each(function () {
+										if (jQuery(this).find("> ol").get(0)) {
+											jQuery(this).find("> ol").get(0).hidden = true;
+										}
+									});										
+								}
+							}
+							
+							return false;
+						});	
+						
+						jQuery("#colour-by").change(function () {
+							if (jQuery(this).val() === "Gender") {
+								var colour = currListItem.find(".gender:first").text() === "Male" ? "#D4DFFF" : "#FFD4D4",
+								    legend = jQuery("#legend #legend-gender");
+									
+								box.attr({fill : colour});
+								if (legend.length === 0) {
+									jQuery("#legend").append("<ol id='legend-gender'><li><span class='swatch-blue'>&nbsp;</span> Male</li><li><span class='swatch-pink'>&nbsp;</span> Female</li></ol>");
+								}				
+							} else if (jQuery(this).val() === "No Colour Fill") {
+								box.attr({fill : "#fff"});
+								jQuery("#legend #legend-gender").remove();
+							}
+						});
+						
+						jQuery("#data1").change(function () {
+							var text = label.attrs.text.replace(/.*\n/, currListItem.find("." + this.value + ":first").text() + "\n");			
+							label.attr("text", text);
+						});
+						jQuery("#data2").change(function () {
+							var text = label.attrs.text.replace(/\n.*/, "\n" + currListItem.find("." + this.value + ":first").text());			
+							label.attr("text", text);
+						});						
+					});
+					
+					//if there are other groups on this level, hide on load
+					jQuery("ol").each(function () {
+						if (this.level === currOl.get(0).level && currOl.closest("li").get(0) && (jQuery("ol").index(currOl) !== jQuery("ol").index(this))) {
+							currOl.closest("li").get(0).treeChildren.hide();
+							currOl.get(0).hidden = true;
+						}				
+					});
+					
+					if (currOl.parent().closest("ol").get(0) && currOl.parent().closest("ol").get(0).hidden) {
+						currOl.closest("li").get(0).treeChildren.hide();
+						currOl.get(0).hidden = true;						
+					}
+				});
+
+				
+				jQuery(".zoom-increase").click(function () {
+					jQuery("#org-chart-data li").each(function () {
+						this.treeChildren.scale(1.2, 1.2);
+					});
+				});
+				
+				jQuery(".zoom-decrease").click(function () {
+					jQuery("#org-chart-data li").each(function () {
+						this.treeChildren.scale(1, 1);
+					});
+				});
+				
+				return jQuery(this);
+
+			};
+
+			jQuery(document).ready(function () {
+				jQuery("#org-chart-data").orgChart({zoom : 1});
+			});
+		</script>
+		
+		<link rel="stylesheet" href="../standards/css/standards.css" media="all">
+		
+		<style type="text/css">
+			h3 { margin: 0; }
+			dt { clear: both; color: #46738F; float: left; }
+			dd { float: left; margin: 0 0 0 3px; }
+			ol { clear: both; overflow: hidden; width: 80%; }
+			li { clear: both; list-style-type: circle; margin: 0 0 7px 0; }
+			
+			#raw-data,
+			#org-chart-data { /*display: none;*/ }
+
+			#org-chart-container { background: #EFEFEF; border: 1px solid #CCC; overflow: hidden; position: relative; width: 100%; }
+			
+			#org-chart-container #org-chart-controls { float: left; width: 215px; }
+			#org-chart-container #org-chart-controls h3 { background: #fff; color: #333; font-size: 100%; margin: 0 0 7px 0; padding: 2px; }
+
+			#org-chart-container #legend { border: 1px solid #ccc; float: left; padding: 2px; position: absolute; right: 7px; top: 7px; width: 200px; }
+			#org-chart-container #legend ol { margin: 0 0 10px 0; padding: 0; width: 200px; }
+			#org-chart-container #legend ol li { clear: both; }
+			#org-chart-container #legend ol li span.swatch-blue { background: #D4DFFF; border: 1px solid #666; display: block; float: left; height: 14px; margin-right: 3px; width: 14px; }
+			#org-chart-container #legend ol li span.swatch-pink { background: #FFD4D4; border: 1px solid #666; display: block; float: left; height: 14px; margin-right: 3px; width: 14px; }
+			
+			#org-chart-container #org-chart-controls #upwards-nav { background: #e1e1e1; border: 1px solid #ccc; clear: left; float: left; margin: 7px; padding: 2px; width: 200px; }
+			#org-chart-container #org-chart-controls #upwards-nav ol { margin-left: 50px; padding: 0; text-align: center; width: 100px; }
+			#org-chart-container #org-chart-controls #upwards-nav ol li { background: transparent url('images/arrow-up.gif') center bottom no-repeat; display: block; list-style: none; margin: 0; padding-bottom: 20px; }
+			#org-chart-container #org-chart-controls #upwards-nav ol li.current-manager { background: none; margin: 0; }
+			#org-chart-container #org-chart-controls #upwards-nav ol li.current-manager span { background: #fff url('images/icon-hasreports.gif') left top no-repeat; border: 1px solid #554AAF; -moz-border-radius: 5px; display: block; padding: 3px; }
+			#org-chart-container #org-chart-controls #upwards-nav ol li a { background: #fff url('images/icon-hasreports.gif') left top no-repeat; border: 1px solid #333; -moz-border-radius: 5px; color: #333; display: block; padding: 3px; text-decoration: none; }
+			
+			#org-chart-container #org-chart-controls #data-controls { background: #e1e1e1; border: 1px solid #ccc; float: left; margin: 7px; padding: 2px; width: 200px; }
+			#org-chart-container #org-chart-controls #data-controls ol { font-size: 100%; margin: 0 0 10px 0; padding: 0; width: 200px; }
+			#org-chart-container #org-chart-controls #data-controls ol li { clear: both; float: left; list-style: none; margin: 4px 0 0 0; padding: 3px; width: 100%; }
+			#org-chart-container #org-chart-controls #data-controls ol li select { float: left; font-size: 100%; }
+			#org-chart-container #org-chart-controls #data-controls ol li label, 
+			#org-chart-container #org-chart-controls #data-controls ol li span.label { display: block; float: left; padding: 2px 0 0 0; width: 60px; }
+			#org-chart-container #org-chart-controls #data-controls ol li a.zoom-increase { background: transparent url('images/icon-zoom-plus.gif') left top no-repeat; display: block; float: left; height: 14px; overflow: hidden; text-indent: -9999px; width: 14px; }
+			#org-chart-container #org-chart-controls #data-controls ol li a.zoom-decrease { background: transparent url('images/icon-zoom-minus.gif') left top no-repeat; display: block; float: left; height: 14px; margin: 0 0 0 10px; overflow: hidden; text-indent: -9999px; width: 14px; }
+
+			#org-chart-display { float: left; width: 700px; position: relative; }
+			
+			.info { background: #FFF; border: 1px solid #ccc; display: none; float: left; margin: 0; padding: 7px; position: absolute; }
+			.info .arrow { background: transparent url(images/arrow.gif) left top no-repeat; display: block; float: left; height: 24px; position: absolute; top: 16px; left: -14px; width: 14px; }
+			.info a.close { background: transparent url(images/icon-close.gif) left top no-repeat; display: block; float: left; height: 10px; overflow: hidden; position: absolute; right: 3px; text-indent: -9999px; top: 3px; width: 10px; } 
+			.info a.close:hover { background-position: left -15px; }
+			.info dl { margin: 0; padding: 0; }
+
+		</style>
+	</head>
+	<body>
+		<h1>Org Chart Proof of Concept</h1>
+		<h2>Javascript Generated Chart</h2>
+		<div id="org-chart-container">
+			<div id="org-chart-controls">
+				<div id="legend">
+					<h3>Legend</h3>
+					<ol>
+						<li><img src="images/icon-hasreports.gif"> Has direct reports</li>
+					</ol>
+				</div>
+				<div id="data-controls">
+					<h3>Data View Options</h3>
+					<ol>
+						<li>
+							<span class="label">Zoom: </span>
+							<a href="#" class="zoom-increase">Increase</a>
+							<a href="#" class="zoom-decrease">Decrease</a>
+						</li>
+						<li><label for="data1">Data 1: </label>
+							<select id="data1">
+								<option value="employee-name" selected="selected">Employee Name</option>
+								<option value="position">Position Title</option>
+							</select>							
+						</li>
+						<li><label for="data2">Data 2: </label>
+							<select id="data2">
+								<option value="position" selected="selected">Position Title</option>
+								<option value="employee-name">Employee Name</option>
+								<option value="position-code">Position Code</option>
+								<option value="position-status">Position Status</option>
+								<option value="employee-type">Employee Type</option>
+								<option value="occupation-status">Occupation Status</option>
+								<option value="weighting">Weighting</option>
+								<option value="gender">Gender</option>
+							</select>							
+						</li>
+						<li><label for="colour-by">Colour By: </label>
+							<select id="colour-by">
+								<option selected="selected">No Colour Fill</option>
+								<option>Gender</option>
+							</select>
+						</li>						
+					</ol>
+				</div>				
+				<div id="upwards-nav">
+					<h3>Navigate Up</h3>
+					<ol>
+						<li><a href="#">Graham <br>President</a></li>
+						<li><a href="#">Megan <br>CEO</a></li>
+						<li class="current-manager"><span>Bob <br>GM</span></li>
+					</ol>
+				</div>							
+			</div>			
+			<div id="org-chart-display">	
+			</div>		
+		</div>
+
+		<h2 id="raw-data">Raw Data (Will not be displayed in production version)</h2>
+		<div id="org-chart-data">
+			<ol class="org-chart">
+				<li class="current-manager">
+					<h3 class="employee-name">Bob</h3>
+					<div class="details">
+						<p>
+							<a href="#">Open Bob's HR file</a><br>
+							<a href="#">Data Comparison Table</a>
+						</p>
+						
+						<dl>			
+							<dt>Position Title</dt><dd class="position"><a href="positions/ceo.html">GM</a></dd>
+							<dt>Position Code</dt><dd class="position-code" class="position-code"><a href="#">112</a></dd>
+							<dt>Position Status</dt><dd class="position-status" class="position-status"><a href="#">Status</a></dd>
+							<dt>Employee Type</dt><dd class="employee-type" class="employee-type"><a href="#">Full Time</a></dd>
+							<dt>Occupation Status</dt><dd class="occupation-status" class="occupation-status"><a href="#">Employed</a></dd>
+							<dt>Weighting</dt><dd class="weighting" class="weighting"><a href="#">1</a></dd>
+							<dt>Gender</dt><dd class="gender"><a href="#">Male</a></dd>
+						</dl>
+					</div>
+					<ol class="org-chart">
+						<li>
+							<h3 class="employee-name">Bill</h3>
+							<div class="details">
+								<p>
+									<a href="bill.html">Open Bill's HR file</a>
+									<br>
+									<a href="#">Data Comparison Table</a>
+								</p>							
+								<dl>			
+									<dt>Position Title</dt><dd class="position"><a href="positions/manager.html">Manager</a></dd>
+									<dt>Position Code</dt><dd class="position-code"><a href="#">xxxx</a></dd>
+									<dt>Position Status</dt><dd class="position-status"><a href="#">Status</a></dd>
+									<dt>Employee Type</dt><dd class="employee-type"><a href="#">Full Time</a></dd>
+									<dt>Occupation Status</dt><dd class="occupation-status"><a href="#">Employed</a></dd>
+									<dt>Weighting</dt><dd class="weighting"><a href="#">2</a></dd>
+									<dt>Gender</dt><dd class="gender"><a href="#">Male</a></dd>
+								</dl>
+							</div>
+						</li>
+						<li>
+							<h3 class="employee-name">Jane</h3>
+							<div class="details">
+								<p>
+									<a href="jane.html">Open Jane's HR file</a>
+									<br>
+									<a href="#">Data Comparison Table</a>
+								</p>							
+								<dl>			
+									<dt>Position Title</dt><dd class="position"><a href="positions/manager.html">Manager</a></dd>							
+									<dt>Position Code</dt><dd class="position-code"><a href="#">xxxx</a></dd>
+									<dt>Position Status</dt><dd class="position-status"><a href="#">Status</a></dd>
+									<dt>Employee Type</dt><dd class="employee-type"><a href="#">Full Time</a></dd>
+									<dt>Occupation Status</dt><dd class="occupation-status"><a href="#">Employed</a></dd>
+									<dt>Weighting</dt><dd class="weighting"><a href="#">2</a></dd>
+									<dt>Gender</dt><dd class="gender"><a href="#">Female</a></dd>
+								</dl>
+							</div>
+							<ol class="org-chart">
+								<li>
+									<h3 class="employee-name">Janine</h3>
+									<div class="details">
+										<p>
+											<a href="janine.html">Open Janine's HR file</a><br>
+											<a href="#">Data Comparison Table</a>
+										</p>											
+										<dl>			
+											<dt>Position Title</dt><dd class="position"><a href="positions/worker.html">Worker</a></dd>
+											<dt>Position Code</dt><dd class="position-code"><a href="#">xxxx</a></dd>
+											<dt>Position Status</dt><dd class="position-status"><a href="#">Status</a></dd>
+											<dt>Employee Type</dt><dd class="employee-type"><a href="#">Full Time</a></dd>
+											<dt>Occupation Status</dt><dd class="occupation-status"><a href="#">Employed</a></dd>
+											<dt>Weighting</dt><dd class="weighting"><a href="#">3</a></dd>
+											<dt>Gender</dt><dd class="gender"><a href="#">Female</a></dd>
+										</dl>	
+									</div>
+								</li>
+								<li>
+									<h3 class="employee-name">Kate</h3>
+									<div class="details">
+										<p>
+											<a href="janine.html">Open Kate's HR file</a><br>
+											<a href="#">Data Comparison Table</a>
+										</p>											
+										<dl>			
+											<dt>Position Title</dt><dd class="position"><a href="positions/worker.html">Worker</a></dd>
+											<dt>Position Code</dt><dd class="position-code"><a href="#">xxxx</a></dd>
+											<dt>Position Status</dt><dd class="position-status"><a href="#">Status</a></dd>
+											<dt>Employee Type</dt><dd class="employee-type"><a href="#">Full Time</a></dd>
+											<dt>Occupation Status</dt><dd class="occupation-status"><a href="#">Employed</a></dd>
+											<dt>Weighting</dt><dd class="weighting"><a href="#">3</a></dd>
+											<dt>Gender</dt><dd class="gender"><a href="#">Female</a></dd>
+										</dl>
+									</div>								
+								</li>								
+							</ol>											
+						</li>
+						<li>
+							<h3 class="employee-name">Harry</h3>
+							<div class="details">
+								<p>
+									<a href="harry.html">Open Harry's HR file</a><br>
+									<a href="#">Data Comparison Table</a>
+								</p>							
+								<dl>			
+									<dt>Position Title</dt><dd class="position"><a href="positions/manager.html">Manager</a></dd>
+									<dt>Position Code</dt><dd class="position-code"><a href="#">xxxx</a></dd>
+									<dt>Position Status</dt><dd class="position-status"><a href="#">Status</a></dd>
+									<dt>Employee Type</dt><dd class="employee-type"><a href="#">Full Time</a></dd>
+									<dt>Occupation Status</dt><dd class="occupation-status"><a href="#">Employed</a></dd>
+									<dt>Weighting</dt><dd class="weighting"><a href="#">2</a></dd>
+									<dt>Gender</dt><dd class="gender"><a href="#">Male</a></dd>
+								</dl>
+							</div>
+							<ol class="org-chart">
+								<li>
+									<h3 class="employee-name">Garry</h3>
+									<div class="details">
+										<p>
+											<a href="garry.html">Open Garry's HR file</a><br>
+											<a href="#">Data Comparison Table</a>	
+										</p>											
+										<dl>			
+											<dt>Position Title</dt><dd class="position"><a href="positions/worker.html">Worker</a></dd>
+											<dt>Position Code</dt><dd class="position-code"><a href="#">xxxx</a></dd>
+											<dt>Position Status</dt><dd class="position-status"><a href="#">Status</a></dd>
+											<dt>Employee Type</dt><dd class="employee-type"><a href="#">Full Time</a></dd>
+											<dt>Occupation Status</dt><dd class="occupation-status"><a href="#">Employed</a></dd>
+											<dt>Weighting</dt><dd class="weighting"><a href="#">3</a></dd>
+											<dt>Gender</dt><dd class="gender"><a href="#">Male</a></dd>
+										</dl>
+									</div>
+									<ol class="org-chart">
+										<li class="has-reports">
+											<h3 class="employee-name">Joe</h3>
+											<div class="details">
+												<p><a href="joe.html">Open Joe's HR file</a>
+													<br>
+													<a href="#">Data Comparison Table</a>
+												</p>											
+												<dl>			
+													<dt>Position Title</dt><dd class="position"><a href="positions/worker.html">Worker</a></dd>
+													<dt>Position Code</dt><dd class="position-code"><a href="#">xxxx</a></dd>
+													<dt>Position Status</dt><dd class="position-status"><a href="#">Status</a></dd>
+													<dt>Employee Type</dt><dd class="employee-type"><a href="#">Full Time</a></dd>
+													<dt>Occupation Status</dt><dd class="occupation-status"><a href="#">Employed</a></dd>
+													<dt>Weighting</dt><dd class="weighting"><a href="#">3</a></dd>
+													<dt>Gender</dt><dd class="gender"><a href="#">Male</a></dd>
+												</dl>
+											</div>		
+										</li>
+										<li>
+											<h3 class="employee-name">Leigh</h3>
+											<div class="details">
+												<p>
+													<a href="leigh.html">Open Leigh's HR file</a><br>
+													<a href="#">Data Comparison Table</a>
+												</p>											
+												<dl>			
+													<dt>Position Title</dt><dd class="position"><a href="positions/worker.html">Worker</a></dd>
+													<dt>Position Code</dt><dd class="position-code"><a href="#">xxxx</a></dd>
+													<dt>Position Status</dt><dd class="position-status"><a href="#">Status</a></dd>
+													<dt>Employee Type</dt><dd class="employee-type"><a href="#">Full Time</a></dd>
+													<dt>Occupation Status</dt><dd class="occupation-status"><a href="#">Employed</a></dd>
+													<dt>Weighting</dt><dd class="weighting"><a href="#">3</a></dd>
+													<dt>Gender</dt><dd class="gender"><a href="#">Female</a></dd>
+												</dl>
+											</div>
+										</li>
+										<li>
+											<h3 class="employee-name">Kim</h3>
+											<div class="details">
+												<p>
+													<a href="janine.html">Open Kim's HR file</a><br>
+													<a href="#">Data Comparison Table</a>
+												</p>											
+												<dl>			
+													<dt>Position Title</dt><dd class="position"><a href="positions/worker.html">Worker</a></dd>
+													<dt>Position Code</dt><dd class="position-code"><a href="#">xxxx</a></dd>
+													<dt>Position Status</dt><dd class="position-status"><a href="#">Status</a></dd>
+													<dt>Employee Type</dt><dd class="employee-type"><a href="#">Full Time</a></dd>
+													<dt>Occupation Status</dt><dd class="occupation-status"><a href="#">Employed</a></dd>
+													<dt>Weighting</dt><dd class="weighting"><a href="#">3</a></dd>
+													<dt>Gender</dt><dd class="gender"><a href="#">Female</a></dd>
+												</dl>
+											</div>
+										</li>
+										<li>
+											<h3 class="employee-name">Dave</h3>
+											<div class="details">
+												<p>
+													<a href="dave.html">Open Dave's HR file</a><br>
+													<a href="#">Data Comparison Table</a>
+												</p>											
+												<dl>			
+													<dt>Position Title</dt><dd class="position"><a href="positions/worker.html">Worker</a></dd>
+													<dt>Position Code</dt><dd class="position-code"><a href="#">xxxx</a></dd>
+													<dt>Position Status</dt><dd class="position-status"><a href="#">Status</a></dd>
+													<dt>Employee Type</dt><dd class="employee-type"><a href="#">Full Time</a></dd>
+													<dt>Occupation Status</dt><dd class="occupation-status"><a href="#">Employed</a></dd>
+													<dt>Weighting</dt><dd class="weighting"><a href="#">3</a></dd>
+													<dt>Gender</dt><dd class="gender"><a href="#">Male</a></dd>
+												</dl>
+											</div>	
+										</li>							
+									</ol>										
+								</li>
+								<li>
+									<h3 class="employee-name">Lauren</h3>
+									<div class="details">
+										<p>
+											<a href="lauren.html">Open Lauren's HR file</a><br>
+											<a href="#">Data Comparison Table</a>
+										</p>											
+										<dl>			
+											<dt>Position Title</dt><dd class="position"><a href="positions/worker.html">Worker</a></dd>
+											<dt>Position Code</dt><dd class="position-code"><a href="#">xxxx</a></dd>
+											<dt>Position Status</dt><dd class="position-status"><a href="#">Status</a></dd>
+											<dt>Employee Type</dt><dd class="employee-type"><a href="#">Full Time</a></dd>
+											<dt>Occupation Status</dt><dd class="occupation-status"><a href="#">Employed</a></dd>
+											<dt>Weighting</dt><dd class="weighting"><a href="#">3</a></dd>
+											<dt>Gender</dt><dd class="gender"><a href="#">Female</a></dd>
+										</dl>
+									</div>	
+								</li>
+								<li>
+									<h3 class="employee-name">Ray</h3>
+									<div class="details">
+										<p>
+											<a href="ray.html">Open Ray's HR file</a><br>
+											<a href="#">Data Comparison Table</a>
+										</p>											
+										<dl>			
+											<dt>Position Title</dt><dd class="position"><a href="positions/worker.html">Worker</a></dd>
+											<dt>Position Code</dt><dd class="position-code"><a href="#">xxxx</a></dd>
+											<dt>Position Status</dt><dd class="position-status"><a href="#">Status</a></dd>
+											<dt>Employee Type</dt><dd class="employee-type"><a href="#">Full Time</a></dd>
+											<dt>Occupation Status</dt><dd class="occupation-status"><a href="#">Employed</a></dd>
+											<dt>Weighting</dt><dd class="weighting"><a href="#">3</a></dd>
+											<dt>Gender</dt><dd class="gender"><a href="#">Male</a></dd>
+										</dl>	
+									</div>										
+								</li>
+								<li>
+									<h3 class="employee-name">Mike</h3>
+									<div class="details">
+										<p>
+											<a href="mike.html">Open Mike's HR file</a><br>
+											<a href="#">Data Comparison Table</a>
+										</p>											
+										<dl>			
+											<dt>Position Title</dt><dd class="position"><a href="positions/worker.html">Worker</a></dd>
+											<dt>Position Code</dt><dd class="position-code"><a href="#">xxxx</a></dd>
+											<dt>Position Status</dt><dd class="position-status"><a href="#">Status</a></dd>
+											<dt>Employee Type</dt><dd class="employee-type"><a href="#">Full Time</a></dd>
+											<dt>Occupation Status</dt><dd class="occupation-status"><a href="#">Employed</a></dd>
+											<dt>Weighting</dt><dd class="weighting"><a href="#">3</a></dd>
+											<dt>Gender</dt><dd class="gender"><a href="#">Male</a></dd>
+										</dl>	
+									</div>								
+								</li>							
+							</ol>													
+						</li>
+					</ol>
+				</li>
+			</ol>
+		</div>
+	</body>
+</html>

@@ -1,0 +1,48 @@
+/* Reset http://meyerweb.com/eric/thoughts/2007/05/01/reset-reloaded/ */
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, font, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td { border: 0; font-weight: inherit; font-style: inherit; font-size: 100%; font-family: inherit; margin: 0; outline: 0;	padding: 0; vertical-align: baseline; }
+:focus { outline: 1px dotted #FFFFCC; }
+body {	line-height: 1;	color: #eee;	background: #333; }
+ol, ul { list-style: none; }
+/* tables still need 'cellspacing="0"' in the markup */
+table { border-collapse: separate;	border-spacing: 0; }
+caption, th, td { text-align: left; font-weight: normal; }
+blockquote:before, blockquote:after,
+q:before, q:after { content: ""; }
+blockquote, q {	quotes: "" "";}
+
+body { font: normal 14px Arial, Helvetica, sans-serif; padding: 20px; }
+#page { padding: 20px 20px 120px; position: relative; }
+h1 { color: #ccffff; font: bold 22px Georgia, Times, serif; margin: 0 0 7px 0; }
+h2 { color: #ffffcc; font: bold 18px Georgia, Times, serif; margin: 0 0 4px 0;  }
+p { margin: 0 0 12px 0; }
+a { color: #a2d8d8; text-decoration: none;}
+a:hover { text-decoration: underline; }
+
+header { border-bottom: 1px solid #ccffff; }
+header h1 { color: #fff; font-size: 32px; }
+header h2 { color: #ccffff; }
+
+nav { margin: 12px 0 0 0; }
+nav li { display: inline; margin: 0 4px 0 0; }
+nav li a { background: #ccffff; color: #333; font-weight: bold; line-height: 24px; padding: 4px; }
+nav li a:hover { background: #fff; text-decoration: none; }
+
+section { border-bottom: 1px solid #555; margin: 20px 0 80px;; padding: 12px 0 20px; }
+
+code { background: #fff; border: 2px dashed #ccc; color: #333; display: block; font-family: Courier New, courier, monotype; margin: 0 7px; padding: 12px; width: 70%; }
+
+form label { font-weight: bold; }
+form label input { padding: 0 0 7px; }
+
+#drag-sandbox { background: #000; border: 1px solid #555; height: 250px; margin: 0 0 20px 0; position: relative; width: 70%; }
+#draggable { background: orange; font-weight: bold; font-size: 20px; height: 180px; left: 10px; padding: 10px; position: absolute; top: 10px; width: 180px; }
+#target { background: red; font-weight: bold; font-size: 20px; height: 180px; padding: 10px; position: absolute; right: 30px; top: 20px; width: 180px; }
+#target.over { background: green; }
+#target.dropped { background: blue; }

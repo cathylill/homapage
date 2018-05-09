@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>5 Cool Things You Didn't Know About HTML5 - Examples</title>
+        <link rel="stylesheet" href="html5.css">
+    </head>
+    <body>
+        <header>
+            <hgroup class="main">
+                <h1>5 Cool Things You Didn't Know About HTML5</h1>
+                <h2>Examples and Demos</h2>
+            </hgroup>
+            <nav>
+                <ol>
+                    <li><a href="#semantic-tags">Semantic Tags</a></li>
+                    <li><a href="#apis">APIs</a></li>
+                    <li><a href="#microdata">Microdata</a></li>
+                    <li><a href="#forms">Forms</a></li>
+                </ol>
+            </nav>
+        </header>
+        <section id="semantic-tags">
+            <h1>Semantic Tags</h1>
+            <h2>Header Tag</h2>
+            <p>The header tag is used in place of a header DIV, and can be used to represent the header of a page, section or article.</p>
+            <pre>
+                <code>
+&lt;div id=&quot;header&quot;&gt;
+    &lt;h1&gt;Page Header&lt;/h1&gt;
+    &lt;ol id=&quot;nav&quot;&gt;
+        &lt;li&gt;&lt;a href=&quot;section1.html&quot;&gt;Section 1&lt;/a&gt;&lt;/li&gt;
+        &lt;li&gt;&lt;a href=&quot;section2.html&quot;&gt;Section 2&lt;/a&gt;&lt;/li&gt;
+        &lt;li&gt;&lt;a href=&quot;section3.html&quot;&gt;Section 3&lt;/a&gt;&lt;/li&gt;
+    &lt;/ol&gt;
+&lt;/div&gt;
+                </code>
+            </pre>
+            <p>Can now be marked up as:</p>
+            <pre>
+                <code>
+&lt;header&gt;
+    &lt;h1&gt;Page Header&lt;/h1&gt;
+    &lt;ol id=&quot;nav&quot;&gt;
+        &lt;li&gt;&lt;a href=&quot;section1.html&quot;&gt;Section 1&lt;/a&gt;&lt;/li&gt;
+        &lt;li&gt;&lt;a href=&quot;section2.html&quot;&gt;Section 2&lt;/a&gt;&lt;/li&gt;
+        &lt;li&gt;&lt;a href=&quot;section3.html&quot;&gt;Section 3&lt;/a&gt;&lt;/li&gt;
+    &lt;/ol&gt;
+&lt;/header&gt;
+                </code>
+            </pre>
+            <h2>Hgroup Tag</h2>
+            <p>Hgroup allows us to group numbered heading elements together, to facilitate subheadings and a more flexible document outline.</p>
+            <pre>
+                <code>
+&lt;div class=&quot;heading&quot;&gt;
+    &lt;h2&gt;The Main Heading&lt;/h2&gt;
+    &lt;p class=&quot;subheading&quot;&gt;With a Subheading&lt;/p&gt;
+&lt;/div&gt;
+                </code>
+            </pre>
+            <p>Can now be marked up as:</p>
+            <pre>
+                <code>
+&lt;hgroup&gt;
+    &lt;h1&gt;The Main Heading&lt;/h1&gt;
+    &lt;h2 class=&quot;subheading&quot;&gt;With a Subheading&lt;/h2&gt;
+&lt;/hgroup&gt;
+                </code>
+            </pre>
+            <h2>More Semantic Tags</h2>
+            <p>This is just a couple of examples of the new tags that are available in HTML5. For more, see <a href="http://dev.w3.org/html5/spec/Overview.html#semantics">http://dev.w3.org/html5/spec/Overview.html#semantics</a>.</p>
+        </section>
+        <section id="apis">
+            <h1>APIs</h1>
+            <h2>Drag 'n' Drop</h2>
+            <div id="drag-sandbox">
+                <div id="draggable">Drag Me!</div>
+                <div id="target">Target</div>
+            </div>
+            <p>Elements can easily be made draggable - the DOM provides a suite of methods and properties that can be used to interact with draggable elements very simply.</p>
+            <pre>
+                <code>
+(function () {
+    var draggable = document.getElementById(&quot;draggable&quot;),
+        target = document.getElementById(&quot;target&quot;);
+    
+    draggable.setAttribute(&#39;draggable&#39;, &#39;true&#39;);
+    
+    draggable.ondragstart = function (e) {
+        e.dataTransfer.effectAllowed = &#39;copy&#39;;
+    };    
+
+    target.ondragover = function (e) {
+        if (e.preventDefault) e.preventDefault();
+        this.className = &#39;over&#39;;
+        e.dataTransfer.dropEffect = &#39;copy&#39;;
+        return false;
+    };
+
+    target.ondragleave = function () {
+        this.className = &#39;&#39;;
+    };
+
+    target.ondrop = function (e) {
+        if (e.stopPropagation) e.stopPropagation();
+        this.className = &#39;dropped&#39;;
+        return false;
+    };        
+}());
+                </code>
+            </pre>
+            <p>For more information on drag and drop see <a href="http://dev.w3.org/html5/spec/Overview.html#dnd">http://dev.w3.org/html5/spec/Overview.html#dnd</a></p>
+        </section>
+        <section id="microdata">
+            <h1>Microdata</h1>
+            <p>The microdata format in HTML5 allows us to use existing and custom vocabularies to add meta data to information on the page. Firstly, we need to set the scope of the vocabulary we have chosen to an element:<p>
+            <pre>
+                <code>
+&lt;section itemscope itemtype=&quot;http://url-to-vocabulary.com&quot;&gt;
+                </code>
+            </pre>
+            <p>Then, use the 'itemprop' attribute to define the type of content that is contained in the element.</p>
+            <pre>
+                <code>
+&lt;section itemscope itemtype=&quot;http://url-to-vocabulary.com&quot;&gt;
+    &lt;p itemprop=&quot;name&quot;&gt;Cathy Lill&lt;/p&gt;
+&lt;/section&gt;
+                </code>
+            </pre>
+            <p>For more information on Microdata go to <a href="http://dev.w3.org/html5/md/">http://dev.w3.org/html5/md/</a></p>
+        </section>
+        <section id="forms">
+            <h1>Form Elements</h1>
+            <p>There is a large collection of new form input types that provide a richer, more meaningful user experience, and can also convey more detailed information about form controls to screen reader users. Here is a few examples.</p>
+            <form action="#">
+                <ul>
+                    <li>
+                        <label>Range Slider <input type="range" min="0" max="2000" step="5" value="150"></label>
+                        <pre>
+                            <code>
+&lt;label&gt;Range Slider &lt;input type=&quot;range&quot; min=&quot;0&quot; max=&quot;2000&quot; step=&quot;5&quot; value=&quot;150&quot;&gt;&lt;/label&gt;
+                            </code>
+                        </pre>
+                    </li>
+                    <li>
+                        <label>Number Spinbox <input type="number" min="0" max="2000" step="5" value="150"></label>
+                        <pre>
+                            <code>
+&lt;label&gt;Number Spinbox &lt;input type=&quot;number&quot; min=&quot;0&quot; max=&quot;2000&quot; step=&quot;5&quot; value=&quot;150&quot;&gt;&lt;/label&gt;
+                            </code>
+                        </pre>
+                    </li>
+                    <li>
+                        <label>Date <input type="date"></label>
+                        <pre>
+                            <code>
+&lt;label&gt;Date &lt;input type=&quot;date&quot;&gt;&lt;/label&gt;
+                            </code>
+                        </pre>
+                    </li>
+                </ul>
+            </form>
+            <p>For more information on the new form in HTML5 go to <a href="http://diveintohtml5.org/forms.html">http://diveintohtml5.org/forms.html</a></p>
+        </section>
+        <script>
+        (function () {
+            var draggable = document.getElementById("draggable"),
+                target = document.getElementById("target");
+            
+            draggable.setAttribute('draggable', 'true');
+            
+            draggable.ondragstart = function (e) {
+                e.dataTransfer.effectAllowed = 'copy';
+            };    
+
+            target.ondragover = function (e) {
+                if (e.preventDefault) e.preventDefault();
+                this.className = 'over';
+                e.dataTransfer.dropEffect = 'copy';
+                return false;
+            };
+
+            target.ondragleave = function () {
+                this.className = '';
+            };
+
+            target.ondrop = function (e) {
+                if (e.stopPropagation) e.stopPropagation();
+                this.className = 'dropped';
+                return false;
+            };        
+        }());
+        
+        </script>
+    </body>
+</html>

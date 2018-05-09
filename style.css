@@ -1,0 +1,138 @@
+/* Dynascript font information:
+ *
+ * URL: http://www.myfonts.com/fonts/alphabetsoup/dynascript/regular/
+ * Copyright: Copyright &#x00A9; 2011 by Michael Doret/Alphabet Soup Type Founders. All rights reserved.
+ */
+
+@font-face {
+    font-family: 'Dynascript';
+    src: url('webfonts/1C8F6E_0_0.eot');
+    src: url('webfonts/1C8F6E_0_0.eot?#iefix') format('embedded-opentype'), url('webfonts/1C8F6E_0_0.woff') format('woff'), url('webfonts/1C8F6E_0_0.ttf') format('truetype');
+}
+
+body {
+    background: #FFF5BF url("images/papar_texture_thumb14.jpg");
+    color: #381D00;
+    font-family: Georgia, Times, serif;
+    margin: 0;
+    padding: 0;
+    text-align: center;
+}
+
+h1.page-header {
+    color: #F54E91;
+    font-family: 'Dynascript';
+    font-size: 72px;
+    margin-bottom: 20px;
+    text-shadow: 2px 2px 0px #381D00;
+    -webkit-transform: rotate(354deg);
+    -moz-transform: rotate(354deg);
+    -ms-transform: rotate(354deg);
+    -o-transform: rotate(354deg);
+    transform: rotate(354deg);
+}
+
+section h1 {
+    color: #381D00;
+    font-family: 'Dynascript';
+    font-size: 42px;
+    margin-bottom: 7px;
+    text-shadow: 2px 2px 0px #FFADA3;
+}
+
+p {
+    line-height: 130%;
+}
+
+li {
+    line-height: 150%;
+}
+
+a {
+    border-bottom: 1px dashed #BD2B66;
+    color: #BD2B66;
+    text-decoration: none;
+}
+
+a:hover {
+    border-color: #CC476A;
+    color: #CC476A;
+}
+
+a:focus {
+    background: #F99FB7;
+    outline: none;
+}
+
+#page {
+    margin: 0 auto;
+    padding: 20px;
+    max-width: 700px;
+    text-align: left;
+}
+
+header h1 {
+    display: inline-block;
+    margin: 0 7px 0 0;
+    position: relative;
+    z-index: 2;
+}
+
+.starburst {
+    background: #FFC1BA;
+    display: inline-block;
+    height: 50px;
+    margin: 0 0 -4px -4px;
+    overflow: visible;
+    position: relative;
+    text-align: center;
+    width: 50px;
+    z-index: 1;
+}
+
+.starburst:before,
+.starburst:after {
+    background: #FFC1BA;
+    content: "";
+    height: 50px;
+    left: 0;
+    position: absolute;
+    top: 0;
+    width: 50px;
+}
+
+.starburst:before {
+    transform: rotate(30deg);
+    z-index: 2;
+    -webkit-transform: rotate(30deg);
+    -moz-transform: rotate(30deg);
+    -ms-transform: rotate(30deg);
+    -o-transform: rotate(30deg);
+}
+
+.starburst:after {
+    transform: rotate(60deg);
+    z-index: 1;
+    -webkit-transform: rotate(60deg);
+    -moz-transform: rotate(60deg);
+    -ms-transform: rotate(60deg);
+    -o-transform: rotate(60deg);
+}
+
+.starburst .tagline {
+    color: #381D00;
+    font-size: 90%;
+    font-style: italic;
+    padding: 0 0 0 12px;
+    position: absolute;
+    white-space: nowrap;
+    z-index: 3;
+}
+
+.section-text {
+    background: white;
+    outline: 1px dashed #F54E91;
+    outline-offset: -3px;
+    box-shadow: 1px 1px 3px rgba(56, 29, 0, 0.1);
+    padding: 5px 10px;
+}

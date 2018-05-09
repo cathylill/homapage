@@ -1,0 +1,51 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <title>Image Switcher</title>
+    <style>
+    .on { position: static; }
+    .off { position: absolute; top: -9999px; }
+    </style>
+  </head>
+  <body>
+      <h1>Let's make an image switcher!</h1>
+      <div id="image-switcher">
+        <ol>
+          <li><img src="https://d311gsky76wsut.cloudfront.net/images/products/presets/3297.1359.Full.jpg" alt="Pearl Jam Sydney Poster 2009"></li>
+          <li><img src="https://d311gsky76wsut.cloudfront.net/images/products/presets/3299.1361.Full.jpg" alt="Pearl Jam Brisbane Poster 2009"></li>
+          <li><img src="https://d311gsky76wsut.cloudfront.net/images/products/presets/3309.1452.Full.jpg" alt="Pearl Jam Columbus Poster 2010"></li>
+        </ol>
+      </div>
+      <script>
+        function makeSwitcher(containerId) {
+          var switcherEl = document.getElementById(containerId),
+              switchItems = switcherEl.getElementsByTagName("li"),
+              controlPrev = document.createElement("a"),
+              controlNext = document.createElement("a"),
+              onClass = "on",
+              offClass = "off",
+              buttonClass = "switcher-control",
+              i;
+          
+          //set up buttons
+          controlPrev.href = "#";
+          controlPrev.innerHTML = "Prev";
+          controlPrev.className = buttonClass;
+          switcherEl.appendChild(controlPrev);
+          
+          controlNext.href = "#";
+          controlNext.innerHTML = "Next";
+          controlNext.className = buttonClass;
+          switcherEl.appendChild(controlNext);
+              
+          //set up list item class names
+          switchItems[0].className = onClass;
+          for (i = 1; i < switchItems.length; i += 1) {
+            switchItems[i].className = offClass;
+          } 
+        }
+        
+        makeSwitcher("image-switcher");
+      </script>
+  </body>
+</html>

@@ -1,0 +1,89 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <title>Image Switcher</title>
+    <link rel="stylesheet" href="switcher.css">
+  </head>
+  <body>
+      <h1>Let's make an image switcher!</h1>
+      <div id="image-switcher">
+        <ol>
+          <li><img src="https://d311gsky76wsut.cloudfront.net/images/products/presets/3297.1359.Full.jpg" alt="Pearl Jam Sydney Poster 2009"></li>
+          <li><img src="https://d311gsky76wsut.cloudfront.net/images/products/presets/3299.1361.Full.jpg" alt="Pearl Jam Brisbane Poster 2009"></li>
+          <li><img src="https://d311gsky76wsut.cloudfront.net/images/products/presets/3309.1452.Full.jpg" alt="Pearl Jam Columbus Poster 2010"></li>
+        </ol>
+      </div>
+      <script>
+        function makeSwitcher(containerEl) {
+          var switcher = document.getElementById(containerEl),
+              switchItems = switcher.getElementsByTagName("li"),
+              switchItemsLen = switchItems.length,
+              controlPrev = document.createElement("a"),
+              controlNext = document.createElement("a"),
+              onClass = "on",
+              offClass = "off",
+              buttonClass = "switcher-control",
+              currentItem = switchItems[0],
+              doSwitch,
+              i;
+          
+          //set up buttons
+          controlPrev.href = "#";
+          controlPrev.innerHTML = "Prev";
+          controlPrev.className = buttonClass;
+          switcher.appendChild(controlPrev);
+          
+          controlNext.href = "#";
+          controlNext.innerHTML = "Next";
+          controlNext.className = buttonClass;
+          switcher.appendChild(controlNext);
+
+          //set up class names
+          currentItem.className = onClass;
+          for (i = 1; i < switchItemsLen; i += 1) {
+            switchItems[i].className = offClass;
+          }
+
+          //switcher function
+          doSwitch = function (event, direction) {
+            var origianalItem = currentItem,
+                nextItem,
+                prevItem;
+                
+            for (i = 0; i < switchItemsLen; i += 1) {
+              //give all the items the 'off' class
+              
+              //check if originalItem is the same as switchItems[i], you can 
+              //use an if statement and '===' to compare them
+              
+                //inside the if statement do some math to figure out which items
+                //in the 'switchItems' array are the next and previous items to 
+                //the original item. Consider what happens if the originalItem is
+                //the first or last in the array.
+            }
+            
+            if (direction === "next") {
+              //set the next items class to be the 'on' class
+              //set the currentItem variable to the new item
+            } else {
+              //set the previous items class to be the 'on' class
+              //set the currentItem variable to the new item
+            }
+
+            //prevent the default action from happening on the click event
+          };
+          
+          //click controllers
+          controlPrev.onclick = function (event) {
+            doSwitch(event, "next");
+          };
+          
+          controlNext.onclick = function (event) {
+            doSwitch(event, "prev");
+          };
+        }
+
+        makeSwitcher("image-switcher");
+      </script>
+  </body>
+</html>

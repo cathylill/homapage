@@ -1,0 +1,105 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <title>Javascript 101 - Class 1</title>
+  </head>
+  <body>
+    <h1>JS 101 Test Page</h1>
+      <p>View the source of this page either in your browser (right click, 'View Source") or text editor (File, "Save As" then open in text editor) to see the example javascript code.</p>
+      <p>Remember to turn on the console in your browser so you can see the messages being logged!</p>
+      <script>
+        //Simple JS statement to call the built-in 'alert' function.
+        //Note the semi-colon at the end of the statement.
+        alert("Hello JS Rookies!");
+
+
+        //Log some text to console. Console is more useful
+        //than alert so we'll use it from now on.			
+        console.log("Debugging, ninja style!");
+
+
+        //Declaring a variable. We need the 'var' keyword, a name
+        //for our variable and a semi-colon to end the statement.
+        var favouriteBand;
+        
+        //Now lets initialise our variable
+        favouriteBand = "Pearl Jam";
+        console.log(favouriteBand);
+
+        //We can declare and initialise at the same time.
+        var animal = "Lion";
+        console.log(animal);
+        
+
+        //Function declaration. Note the structure and that the
+        //function is saved in memory but not executed.
+        function saySomething() {
+          console.log("This message is brought to you by a function");	
+        }
+        //Lets execute that function! Note the same syntax as the
+        //'alert' and console.log' function calls above.
+        saySomething();
+
+
+        //Passing arguments to a function
+        function sayCustomMessage(message) {
+          console.log(message);
+        }
+
+        sayCustomMessage("This message will appear in the console");
+        sayCustomMessage("So will this");
+
+
+        //Variables should be declared at the top of the function
+        //they belong to. It's good style to use one 'var' statement 
+        //with each variable declaration separated by a comma.
+        function letsDoMaths(a, b) {
+          var addedUp, //remember, we can declare a variable and initialise it later
+              messageText = "The result is: ";
+          
+          addedUp = a + b;              
+          console.log(messageText + addedUp);
+        }
+
+        letsDoMaths(7, 12);
+        
+        var thisMany = 100;
+        letsDoMaths(thisMany, 50);
+
+
+        //Return - returns a value to the function caller and quits the
+        //current block (in this case the block is the function)
+        function gimmeSomethingBack () {
+          return "This is the return value";
+          console.log("Is the gimme function still running?");
+        };
+
+        var theResult = gimmeSomethingBack();
+        console.log(theResult);
+              
+
+        //Scoping. Variables are available anywhere inside 
+        //their own function. Variables declared without the 'var' 
+        //keyword are 'implied globals' and are available everywhere.
+        //Implied global variables should always be avoided as they can
+        //overwrite existing variable values.
+        function ohNoGlobals() {
+          var niceVariable = "i'm behaving, nothing to see here";
+          
+          evilGlobal = "mwahahaha"; 
+          console.log(animal); //we set this variable up at the top of the page - it's available here because it is set in the global scope
+        }
+
+        ohNoGlobals();
+        console.log(evilGlobal);
+        //The following statement causes an error, as niceVariable is not
+        //available in the global scope. It is only available inside
+        //the 'ohNoGlobals' function.
+        //console.log(niceVariable);
+    </script>
+  </body>
+</html>
+
+<!-- This work is licenced under the Creative Commons Attribution-NonCommercial-ShareAlike
+3.0 Unported License. To view a copy of this licence, visit http://creativecommons.org/licenses/by-nc-sa/3.0/ 
+or send a letter to Creative Commons, 171 Second Street, Suite 300, San Francisco, California 94105, USA. -->

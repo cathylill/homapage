@@ -1,0 +1,63 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <title>Homework Solution - Class 2</title>  
+  </head>
+  <body>
+      <h1>The dog ate my homework...</h1>
+      <p>orly?</p>
+      <script>
+        function convertCmToIn(value) {
+          var ratio = 0.393700787,
+              result = value * ratio;
+              
+          console.log(value + "cm equals " + result + " inches");
+        }
+        
+        convertCmToIn(5);
+        
+        function convertBoth(value, direction) {
+          var ratio,
+              result,
+              message;
+              
+          if (direction === "inches to cm") {
+            ratio = 2.54;
+            result = value * ratio;
+            message = value + " inches equals " + result + "cm";      
+          } else if (direction === "cm to inches") {
+            ratio = 0.393700787;
+            result = value * ratio;
+            message = value + "cm equals " + result + " inches";
+          } else {
+            message = "Sorry couldn't convert";
+          }
+          
+          console.log(message);
+        }
+        
+        convertBoth(4, "inches to cm");
+        convertBoth(4, "cm to inches");
+        convertBoth(4, "blah");
+        
+        function convertArray(values, conversion) {
+          var ratio = (conversion === "inches to cm") ? 2.54 : 0.393700787, //this is a shorthand version of 'if'
+              message,
+              result;
+              
+          for (var i = 0; i < values.length; i += 1) {
+            result = values[i] * ratio;
+            if (ratio === 2.54) {
+              message = values[i] + " inches equals " + result + "cm";
+              console.log(message);
+            } else {
+              message = values[i] + "cm equals " + result + " inches";
+              console.log(message);
+            }
+          }
+        }
+        
+        convertArray([3, 4, 5], "inches to cm");
+      </script>
+  </body>
+</html>

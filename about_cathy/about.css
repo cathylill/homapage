@@ -1,0 +1,7 @@
+body { font-family: Georgia, Times, serif; padding: 30px; }
+h1,
+h2 { color: #333; }
+p ,
+li { line-height: 130%; }
+a { border-bottom: 1px dashed #003366; color: #003366; text-decoration: none; }
+a:hover { border-color: #0066CC; color: #0066CC; }
